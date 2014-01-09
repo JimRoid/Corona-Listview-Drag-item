@@ -39,15 +39,17 @@
 display.setStatusBar(display.HiddenStatusBar)
 
 -- Set the background to white
---display.setDefault( "background", 1, 1, 1)
+display.setDefault( "background", 1, 1, 1)
 
 -- Require the widget & storyboard libraries
 local widget = require("widget")
 local storyboard = require("storyboard")
 require("widgets")
 
-local W = display.contentWidth
-local H = display.contentHeight
+W = display.contentWidth
+H = display.contentHeight
+_W = display.viewableContentWidth
+_H = display.viewableContentHeight
 
 
 local url = ""

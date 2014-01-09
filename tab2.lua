@@ -18,13 +18,15 @@ function scene:createScene(event)
     -- .listname is the name of the particular group of rows to be arranged (here we have two lists "B" and "D" which are separated from each other)
     -- .itemheight defines the height of the row - 0,0 of the row's display group is the top and itemheight shows where the bottom is
     -- .fontsize is used in the newRow() function below to render text
+    local size = 36
+    local item_height = 100
     local rows = {
-        { colour = { 0.39, 0.39, 0.39 }, isLocked = true, listname = "A", itemheight = 22, fontsize = 12, },
-        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = 44, fontsize = 16, },
-        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = 44, fontsize = 16, },
-        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = 44, fontsize = 16, },
-        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = 44, fontsize = 16, },
-        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = 44, fontsize = 16, },
+        { colour = { 0.39, 0.39, 0.39 }, isLocked = true, listname = "A", itemheight = item_height + 100, fontsize = size, },
+        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = item_height, fontsize = size, },
+        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = item_height, fontsize = size, },
+        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = item_height, fontsize = size, },
+        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = item_height, fontsize = size, },
+        { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = item_height, fontsize = size, },
         --		{colour={100,100,100},isLocked=true,listname="C",itemheight=22,fontsize=12,},
         --		{colour={200,200,255},isLocked=false,listname="D",itemheight=44,fontsize=16,},
         --		{colour={200,200,255},isLocked=false,listname="D",itemheight=44,fontsize=16,},
@@ -87,18 +89,32 @@ function scene:createScene(event)
     local titleBar_y = 68
 
     -- button below is local because of forward declaration defined earlier
-    editButton = widget.newButton{ style = "blue1Small", label = "Edit", onRelease = onEditRelease }
-    editButton.x, editButton.y, editButton.alpha = 320 - 40, titleBar_y - 24, 1
-    editButton.xScale, editButton.yScale = .5, .5
+    editButton = widget.newButton{
+        width = 100,
+        label = "Edit",
+        fontSize = 30,
+        onRelease = onEditRelease
+    }
+    editButton.x = _W - editButton.width * 0.5
+    editButton.y = 0 + editButton.height * 0.5 -- titleBar_y - 24
+    editButton.alpha = 1
+
 
     -- button below is local because of forward declaration defined earlier
-    doneButton = widget.newButton{ style = "blue1Small", label = "Done", onRelease = onDoneRelease }
-    doneButton.x, doneButton.y, doneButton.alpha = 320 - 40, titleBar_y - 24, 0
-    doneButton.xScale, doneButton.yScale = .5, .5
-
+    doneButton = widget.newButton{
+        width = 100,
+        height = 120,
+        label = "Done",
+        fontSize = 30,
+        onRelease = onDoneRelease
+    }
+    doneButton.x = _W - doneButton.width * 0.5
+    doneButton.y = editButton.y
+    doneButton.alpha = 0
 
     group:insert(editButton)
     group:insert(doneButton)
+
 
     -- create list of reordereditems
     dragStarted = function(e)
@@ -145,6 +161,8 @@ function scene:createScene(event)
 
         -- the shadow around the row, only visible when the row is dragged
         local light = display.newRect(group, 0, -10, 640, row.itemheight + 20)
+        light.x = W * 0.5
+        light.y = light.height * 0.5
         light:setFillColor(0.19, 0.19, 0.19)
         light.alpha = 0
 
@@ -153,15 +171,19 @@ function scene:createScene(event)
         -- the black outline of the row
         local border = display.newRect(group, 0, 0, 640, row.itemheight)
         border:setFillColor(0.19, 0.19, 0.19)
-
+        border.x = W * 0.5
+        border.y = border.height * 0.5
         -- the fill of the row
         local back = display.newRect(group, 0, 1, 640, row.itemheight - 1)
         back:setFillColor(row.colour[1], row.colour[2], row.colour[3])
         group.back = back
+        back.x = W * 0.5
+        back.y = back.height * 0.5
 
         local textObj = display.newText(group, text, 0, 0, native.systemFont, row.fontsize)
         textObj:setFillColor(0, 0, 0)
-        textObj.x, textObj.y = 30, row.itemheight / 2
+        textObj.x = W * 0.5
+        textObj.y = row.itemheight * 0.5
         group.textObj = textObj
 
         -- only add a drag tab if not locked
@@ -169,7 +191,8 @@ function scene:createScene(event)
         if (not row.isLocked) then
             dragtab = display.newRoundedRect(group, 0, 0, 34, 34, 5)
             dragtab:setFillColor(0.78, 0.78, 0.78)
-            dragtab.x, dragtab.y = 300, dragtab.height
+            dragtab.x = _W - dragtab.width
+            dragtab.y = dragtab.height
             if (row.isEdit) then dragtab.alpha = 1 else dragtab.alpha = 0 end
             group.dragtab = dragtab
         end
@@ -192,8 +215,6 @@ function scene:createScene(event)
     local y, name, groupindex = 0, "", 0
     for i = 1, #rows do
         local group, dragtab, deltab = newRow("Row (" .. i .. ")", rows[i])
-
-        --		scrollView:insert( group )
         rowGrp:insert(group)
 
         group.x, group.y = 0, y
