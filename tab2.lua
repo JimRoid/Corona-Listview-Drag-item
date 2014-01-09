@@ -27,6 +27,7 @@ function scene:createScene(event)
         { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = item_height, fontsize = size, },
         { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = item_height, fontsize = size, },
         { colour = { 1, 1, 1 }, isLocked = false, listname = "B", itemheight = item_height, fontsize = size, },
+
         --		{colour={100,100,100},isLocked=true,listname="C",itemheight=22,fontsize=12,},
         --		{colour={200,200,255},isLocked=false,listname="D",itemheight=44,fontsize=16,},
         --		{colour={200,200,255},isLocked=false,listname="D",itemheight=44,fontsize=16,},
@@ -36,6 +37,8 @@ function scene:createScene(event)
         --		{colour={200,200,255},isLocked=false,listname="D",itemheight=44,fontsize=16,},
         --		{colour={100,100,100},isLocked=true,listname="E",itemheight=22,fontsize=12,},
     }
+
+
 
     -- get this because otherwise the scrollView cannot be told how tall it's content is
     -- there is a gotcha with this because the content height may not be what you tell it to be, so expect it to be slightly more scrollable than you expect
@@ -53,7 +56,7 @@ function scene:createScene(event)
         horizontalScrollingDisabled = true,
         listener = scrollListener,
     }
-
+    scrollView.widgetHeight = _H
     -- add content groups
     scrollView:insert(rowGrp)
     scrollView:insert(headerGrp)
@@ -135,12 +138,12 @@ function scene:createScene(event)
 
     itemMoved = function(e)
         local item = e.target
-    --		print('itemMoved',item.index)
+    --        print('itemMoved', item.index)
     end
 
     delete = function(e)
         local item = e.target.parent -- the target is the delete button so the list row object is it's parent
-        --		print('delete',item.index,item.listname)
+        print('delete', item.index, item.listname)
         transition.to(item, {
             time = 350,
             alpha = 0,
